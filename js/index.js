@@ -4,14 +4,21 @@ var transitionTime = 5;
 var holdTime = 3;
 
 var carousel = document.querySelector('.carousel');
-var imglist = document.querySelector('.img-list');
+var imagesList = document.querySelector('.img-list');
+var count = document.querySelectorAll('.img-list img').length;
 
-imglist.style.display='flex';
-imglist.style.marginLeft='0px';
+imagesList.style.display = 'flex';
+imagesList.style.marginLeft = '0px';
+
+/*
+    Add control div to the carousel
+    - Slide Left Button 
+    - Slide Right Button
+*/
 
 var controls = document.createElement('div')
 controls.classList.add('controls')
-imglist.appendChild(controls)
+imagesList.appendChild(controls)
 
 var leftBtn = document.createElement('div')
 leftBtn.classList.add('left-btn')
@@ -21,64 +28,87 @@ var rightBtn = document.createElement('div')
 rightBtn.classList.add('right-btn')
 controls.appendChild(rightBtn)
 
-var dotBar = document.createElement('div')
-dotBar.classList.add('dot-bar')
-dotBar.style.textAlign='center';
-var count = document.querySelectorAll('.img-list img').length;
-for (var i=0; i<count;i++){
+/* 
+    Div for the bottom index dots.
+*/
+
+var dotsContainer = document.createElement('div')
+dotsContainer.classList.add('dot-bar')
+dotsContainer.style.textAlign = 'center';
+
+for (var i = 0; i < count; i++) {
     var dot = document.createElement('div')
     dot.classList.add('dot')
-    dot.setAttribute('index',i+1)
-    dot.addEventListener('click',function(i){
-        mgvalue(i.target.getAttribute('index'))
+    dot.setAttribute('index', i + 1)
+    dot.addEventListener('click', function (i) {
+        slideOperation(i.target.getAttribute('index'))
     })
-    dotBar.appendChild(dot)
+    dotsContainer.appendChild(dot)
 }
 
-controls.appendChild(dotBar)
+controls.appendChild(dotsContainer)
 
-imglist.addEventListener('mouseover',function(){
-   controls.style.display='block';
-})
-imglist.addEventListener('mouseout',function(){
-    controls.style.display='block';
-})
 
-rightBtn.addEventListener('click',function(){
-    mgvalue(currentIndex+1)
+/*
+    Shows Controls on mouse hover only.
+*/
+imagesList.addEventListener('mouseover', function () {
+    controls.style.display = 'block';
 })
-leftBtn.addEventListener('click',function(){
-   mgvalue(currentIndex-1)
+imagesList.addEventListener('mouseout', function () {
+    controls.style.display = 'none';
 })
 
-function mgvalue (value){
-    if(value<=0){currentIndex=count}
-    else if (value>count){currentIndex=1}
-    else{currentIndex=value;}
-    var finalWidth=-(currentIndex-1)*imageWidth;
+/*
+    Control Buttons click event.
+*/
+
+rightBtn.addEventListener('click', function () {
+    slideOperation(currentIndex + 1)
+})
+leftBtn.addEventListener('click', function () {
+    slideOperation(currentIndex - 1)
+})
+
+/*     
+    Update Current Index
+    Update index dots.
+*/
+
+function slideOperation(value) {
+    if (value <= 0) {
+        currentIndex = count
+    } else if (value > count) {
+        currentIndex = 1
+    } else {
+        currentIndex = value;
+    }
+    var finalWidth = -(currentIndex - 1) * imageWidth;
     transitionEffect(finalWidth)
+
     var dotLists = document.querySelectorAll('.dot');
-    for(i=0;i<count;i++){
-        if(i==currentIndex-1) {
+    for (i = 0; i < count; i++) {
+        if (i == currentIndex - 1) {
             dotLists[i].classList.add('active')
-        }
-        else {
+        } else {
             dotLists[i].classList.remove('active')
         }
     }
 }
 
-function transitionEffect (final) {
-    var Initialmargin = parseInt(getComputedStyle(imglist).marginLeft);
-    var step = (Initialmargin-final)/transitionTime;
-    var transitInterval = setInterval(function(){
-        var marginValue = parseInt(getComputedStyle(imglist).marginLeft);
+/*
+    Animate the Slide Transition
+*/
+
+function transitionEffect(final) {
+    var initialMargin = parseInt(getComputedStyle(imagesList).marginLeft);
+    var step = (initialMargin - final) / transitionTime;
+    var transitInterval = setInterval(function () {
+        var marginValue = parseInt(getComputedStyle(imagesList).marginLeft);
         if (marginValue == final) {
             clearInterval(transitInterval)
-            console.log(marginValue,final)
+        } else {
+            imagesList.style.marginLeft = marginValue - step + 'px';
         }
-        else{
-            imglist.style.marginLeft=marginValue-step+'px';
-        }
-    },100)
+    }, 100)
 }
