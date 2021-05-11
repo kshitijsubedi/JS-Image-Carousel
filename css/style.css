@@ -4,7 +4,12 @@
     width: 640px;
     position: relative;
 }
-
+h3 {
+    text-align: center;
+}
+h3 span{
+    font-size: 11px;
+}
 .left-btn {
     position: absolute;
     background: url(../img/arrow.svg) center no-repeat;

@@ -1,11 +1,13 @@
 var currentIndex = 1;
 var imageWidth = 640;
-var transitionTime = 5;
-var holdTime = 3;
+var transitionTime = 500;
+var holdTime = 5000;
+var factor = 10;
 
 var carousel = document.querySelector('.carousel');
 var imagesList = document.querySelector('.img-list');
-var count = document.querySelectorAll('.img-list img').length;
+var count = document.querySelectorAll('.img-list img').length; //number of images in slide
+var maxMargin = -(count - 1) * imageWidth //maximum margin carousel can get.
 
 imagesList.style.display = 'flex';
 imagesList.style.marginLeft = '0px';
@@ -30,6 +32,7 @@ controls.appendChild(rightBtn)
 
 /* 
     Div for the bottom index dots.
+    Count images and add respective dots.
 */
 
 var dotsContainer = document.createElement('div')
@@ -102,13 +105,32 @@ function slideOperation(value) {
 
 function transitionEffect(final) {
     var initialMargin = parseInt(getComputedStyle(imagesList).marginLeft);
-    var step = (initialMargin - final) / transitionTime;
+    var step = (initialMargin - final) / factor;
     var transitInterval = setInterval(function () {
         var marginValue = parseInt(getComputedStyle(imagesList).marginLeft);
-        if (marginValue == final) {
+
+        /* Boundary Conditions 
+           Reset values on exceeding min-max margin.
+        */
+        if (marginValue > 0) {
+            imagesList.style.marginLeft = '0px';
+            currentIndex = 1;
+            clearInterval(transitInterval);
+        } else if (marginValue < maxMargin) {
+            imagesList.style.marginLeft = maxMargin + 'px';
+            currentIndex = count - 1;
+            clearInterval(transitInterval);
+        } else if (marginValue == final) {
             clearInterval(transitInterval)
         } else {
             imagesList.style.marginLeft = marginValue - step + 'px';
         }
-    }, 100)
+    }, (transitionTime / factor))
 }
+
+/*
+    Auto Transition on certain interval
+*/
+setInterval(function () {
+    slideOperation(currentIndex + 1)
+}, holdTime)
